@@ -18,9 +18,13 @@
   "license": "ISC",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.3",
+    "@types/express": "^5.0.1",
     "@types/node": "^22.15.18",
+    "@types/ws": "^8.18.1",
+    "express": "^5.1.0",
     "node-fetch": "^3.3.2",
     "typescript": "^5.8.3",
+    "ws": "^8.18.2",
     "zod": "^3.24.4"
   }
 }

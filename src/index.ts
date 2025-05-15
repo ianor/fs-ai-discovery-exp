@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import express from "express";
 import fetch from "node-fetch";
 import { z } from "zod";
 
@@ -325,9 +326,58 @@ server.tool(
 
 // Run the server
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("FamilySearch MCP Server running on stdio");
+  const app = express();
+  app.use(express.json());
+  
+  // Create MCP server route
+  app.post('/mcp', async (req, res) => {
+    try {
+      // Create new transport instance for each request to ensure isolation
+      const transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: undefined,
+      });
+
+      // Handle request cleanup
+      res.on('close', () => {
+        console.log('Request closed');
+        transport.close();
+      });
+
+      // Connect transport to server and handle request
+      await server.connect(transport);
+      await transport.handleRequest(req, res, req.body);
+    } catch (error) {
+      console.error('Error handling MCP request:', error);
+      if (!res.headersSent) {
+        res.status(500).json({
+          jsonrpc: '2.0',
+          error: {
+            code: -32603,
+            message: 'Internal server error',
+          },
+          id: null,
+        });
+      }
+    }
+  });
+
+  // Add GET handler to properly handle method not allowed
+  app.get('/mcp', async (req, res) => {
+    console.log('Received GET MCP request');
+    res.status(405).json({
+      jsonrpc: '2.0',
+      error: {
+        code: -32000,
+        message: 'Method not allowed.'
+      },
+      id: null
+    });
+  });
+
+  // Start the server
+  app.listen(3000, () => {
+    console.error("FamilySearch MCP Server running on HTTP at port 3000");
+  });
 }
 
 main().catch((error) => {
