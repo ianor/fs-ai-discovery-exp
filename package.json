@@ -1,0 +1,26 @@
+{
+  "name": "fs-api-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "An MCP server that wraps the FamilySearch API Person Search endpoint",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "tsc && node build/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "familysearch",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.3",
+    "@types/node": "^22.15.18",
+    "node-fetch": "^3.3.2",
+    "typescript": "^5.8.3",
+    "zod": "^3.24.4"
+  }
+}
