@@ -375,8 +375,8 @@ async function main() {
   });
 
   // Start the server
-  app.listen(3000, () => {
-    console.error("FamilySearch MCP Server running on HTTP at port 3000");
+  app.listen(process.env.PORT || 3000, () => {
+    console.error(`FamilySearch MCP Server running on HTTP at port ${process.env.PORT || 3000}`);
   });
 }
 
