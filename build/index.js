@@ -41,7 +41,7 @@ async function searchPeople(accessToken, query) {
         const response = await fetch(`${FS_API_BASE}?${params.toString()}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
-                Accept: "application/json",
+                Accept: "application/json, text/event-stream",
             },
         });
         if (!response.ok) {
@@ -61,7 +61,7 @@ async function getPersonPortraits(accessToken, personId) {
         const response = await fetch(`${FS_PLATFORM_API}/${personId}/portraits`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
-                Accept: "application/json",
+                Accept: "application/json, text/event-stream",
             },
         });
         if (!response.ok) {
@@ -81,7 +81,7 @@ async function getPersonAncestry(accessToken, personId, generations = 4) {
         const response = await fetch(`${FS_ANCESTRY_API}?person=${personId}&generations=${generations}`, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
-                Accept: "application/x-gedcomx-v1+json",
+                Accept: "application/x-gedcomx-v1+json, text/event-stream",
             },
         });
         if (!response.ok) {
