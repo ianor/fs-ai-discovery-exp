@@ -353,8 +353,11 @@ async function main() {
         transport.close();
       });
 
+      console.log('Received MCP request:', req.headers, req.body);
+
       // Connect transport to server and handle request
       await server.connect(transport);
+      
       await transport.handleRequest(req, res, req.body);
     } catch (error) {
       console.error('Error handling MCP request:', error);
