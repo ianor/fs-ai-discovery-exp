@@ -31,13 +31,19 @@ async function searchPeople(accessToken: string, query: {
 }) {
   const params = new URLSearchParams();
   
-  if (query.givenName) params.append("givenName", query.givenName);
-  if (query.surname) params.append("surname", query.surname);
-  if (query.gender) params.append("gender", query.gender);
-  if (query.birthPlace) params.append("birthPlace", query.birthPlace);
-  if (query.birthYear) params.append("birthYear", query.birthYear.toString());
-  if (query.deathPlace) params.append("deathPlace", query.deathPlace);
-  if (query.deathYear) params.append("deathYear", query.deathYear.toString());
+  if (query.givenName) params.append("q.givenName", query.givenName);
+  if (query.surname) params.append("q.surname", query.surname);
+  if (query.gender) params.append("q.sex", query.gender);
+  if (query.birthPlace) params.append("q.birthLikePlace", query.birthPlace);
+  if (query.birthYear) {
+    params.append("q.birthLikeDate.from", query.birthYear.toString());
+    params.append("q.birthLikeDate.to", (query.birthYear + 1).toString());
+  }
+  if (query.deathPlace) params.append("q.deathLikePlace", query.deathPlace);
+  if (query.deathYear) {
+    params.append("q.deathLikeDate.from", query.deathYear.toString());
+    params.append("q.deathLikeDate.to", (query.deathYear + 1).toString());
+  }
 
   try {
     const response = await fetch(`${FS_API_BASE}?${params.toString()}`, {

@@ -1,0 +1,165 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FamilySearch API",
+    "description": "Search and explore family history data from FamilySearch's Family Tree",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/mcp": {
+      "post": {
+        "description": "FamilySearch API endpoint",
+        "operationId": "familysearch",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Request": {
+        "type": "object",
+        "required": ["tool", "params"],
+        "properties": {
+          "tool": {
+            "type": "string",
+            "enum": ["search-people", "get-portraits", "get-ancestry"]
+          },
+          "params": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SearchPeopleParams"
+              },
+              {
+                "$ref": "#/components/schemas/GetPortraitsParams"
+              },
+              {
+                "$ref": "#/components/schemas/GetAncestryParams"
+              }
+            ]
+          }
+        }
+      },
+      "Response": {
+        "type": "object",
+        "required": ["content"],
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "text"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["text"]
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "SearchPeopleParams": {
+        "type": "object",
+        "required": ["accessToken"],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "FamilySearch API access token"
+          },
+          "givenName": {
+            "type": "string",
+            "description": "Person's given (first) name"
+          },
+          "surname": {
+            "type": "string",
+            "description": "Person's surname (last name)"
+          },
+          "gender": {
+            "type": "string",
+            "description": "Person's gender (M/F)"
+          },
+          "birthPlace": {
+            "type": "string",
+            "description": "Place of birth"
+          },
+          "birthYear": {
+            "type": "number",
+            "description": "Year of birth"
+          },
+          "deathPlace": {
+            "type": "string",
+            "description": "Place of death"
+          },
+          "deathYear": {
+            "type": "number",
+            "description": "Year of death"
+          }
+        }
+      },
+      "GetPortraitsParams": {
+        "type": "object",
+        "required": ["accessToken", "personId"],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "FamilySearch API access token"
+          },
+          "personId": {
+            "type": "string",
+            "description": "FamilySearch person ID"
+          }
+        }
+      },
+      "GetAncestryParams": {
+        "type": "object",
+        "required": ["accessToken", "personId"],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "FamilySearch API access token"
+          },
+          "personId": {
+            "type": "string",
+            "description": "FamilySearch person ID"
+          },
+          "generations": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 8,
+            "default": 4,
+            "description": "Number of generations to retrieve (1-8, default 4)"
+          }
+        }
+      }
+    }
+  }
+}
