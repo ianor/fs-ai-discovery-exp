@@ -301,7 +301,7 @@ async function main() {
                 console.log('Request closed');
                 transport.close();
             });
-            console.log('Received MCP request:', req.headers, req.body);
+            console.log('Received MCP request (new):', req.headers, req.body);
             // Connect transport to server and handle request
             await server.connect(transport);
             await transport.handleRequest(req, res, req.body);
