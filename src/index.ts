@@ -46,6 +46,7 @@ async function searchPeople(accessToken: string, query: {
   }
 
   try {
+    console.log(`${FS_API_BASE}?${params.toString()}`, `headers: {\n  Authorization: Bearer ${accessToken},\n  Accept: "application/json, text/event-stream"\n}`);
     const response = await fetch(`${FS_API_BASE}?${params.toString()}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -54,6 +55,8 @@ async function searchPeople(accessToken: string, query: {
     });
 
     if (!response.ok) {
+      console.error("Error response from FamilySearch API:", response.statusText);
+      console.error("Response body:", await response.text());
       throw new Error(`FamilySearch API error: ${response.statusText}`);
     }
 
