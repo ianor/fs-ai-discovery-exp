@@ -110,8 +110,10 @@ server.tool("search-people", "Search for people in FamilySearch's Family Tree", 
     deathYear: z.number().optional().describe("Year of death"),
 }, async ({ accessToken, ...searchParams }) => {
     try {
+        console.log("Searching Family Tree with params:", searchParams);
         const results = await searchPeople(accessToken, searchParams);
         const formattedResults = formatSearchResults(results);
+        console.log("Formatted results:", formattedResults);
         return {
             content: [
                 {

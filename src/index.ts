@@ -128,9 +128,10 @@ server.tool(
   },
   async ({ accessToken, ...searchParams }) => {
     try {
+      console.log("Searching Family Tree with params:", searchParams);
       const results = await searchPeople(accessToken, searchParams);
       const formattedResults = formatSearchResults(results);
-
+      console.log("Formatted results:", formattedResults);
       return {
         content: [
           {
