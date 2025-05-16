@@ -9,15 +9,6 @@ const FS_API_BASE = "https://www.familysearch.org/platform/tree/search";
 const FS_PLATFORM_API = "https://www.familysearch.org/platform/tree/persons";
 const FS_ANCESTRY_API = "https://www.familysearch.org/platform/tree/ancestry";
 
-// Create server instance
-const server = new McpServer({
-  name: "familysearch",
-  version: "1.0.0",
-  capabilities: {
-    resources: {},
-    tools: {},
-  },
-});
 
 // Function to search for people in the FamilySearch API
 async function searchPeople(accessToken: string, query: {
@@ -111,48 +102,6 @@ async function getPersonAncestry(accessToken: string, personId: string, generati
     throw error;
   }
 }
-
-// Register the search tool
-server.tool(
-  "search-people",
-  "Search for people in FamilySearch's Family Tree",
-  {
-    accessToken: z.string().describe("FamilySearch API access token"),
-    givenName: z.string().optional().describe("Person's given (first) name"),
-    surname: z.string().optional().describe("Person's surname (last name)"),
-    gender: z.string().optional().describe("Person's gender (M/F)"),
-    birthPlace: z.string().optional().describe("Place of birth"),
-    birthYear: z.number().optional().describe("Year of birth"),
-    deathPlace: z.string().optional().describe("Place of death"),
-    deathYear: z.number().optional().describe("Year of death"),
-  },
-  async ({ accessToken, ...searchParams }) => {
-    try {
-      console.log("Searching Family Tree with params:", searchParams);
-      const results = await searchPeople(accessToken, searchParams);
-      const formattedResults = formatSearchResults(results);
-      console.log("Formatted results:", formattedResults);
-      return {
-        content: [
-          {
-            type: "text",
-            text: formattedResults,
-          },
-        ],
-      };
-    } catch (err) {
-      const error = err as Error;
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Error searching FamilySearch: ${error.message}`,
-          },
-        ],
-      };
-    }
-  }
-);
 
 // Function to format search results into a readable string
 function formatSearchResults(results: any) {
@@ -263,81 +212,140 @@ ID: ${person.id}`;
   return buildAncestryTree(rootPerson.id);
 }
 
-// Register the portraits tool
-server.tool(
-  "get-portraits",
-  "Get portrait pictures for a person in FamilySearch's Family Tree",
-  {
-    accessToken: z.string().describe("FamilySearch API access token"),
-    personId: z.string().describe("FamilySearch person ID"),
-  },
-  async ({ accessToken, personId }) => {
-    try {
-      const results = await getPersonPortraits(accessToken, personId);
-      const formattedResults = formatPortraitResults(results);
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: formattedResults,
-          },
-        ],
-      };
-    } catch (err) {
-      const error = err as Error;
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Error fetching portraits: ${error.message}`,
-          },
-        ],
-      };
+function initializeServer() {
+  // Create server instance
+  const server = new McpServer({
+    name: "familysearch",
+    version: "1.0.0",
+    capabilities: {
+      resources: {},
+      tools: {},
+    },
+  });
+
+  // Register the search tool
+  server.tool(
+    "search-people",
+    "Search for people in FamilySearch's Family Tree",
+    {
+      accessToken: z.string().describe("FamilySearch API access token"),
+      givenName: z.string().optional().describe("Person's given (first) name"),
+      surname: z.string().optional().describe("Person's surname (last name)"),
+      gender: z.string().optional().describe("Person's gender (M/F)"),
+      birthPlace: z.string().optional().describe("Place of birth"),
+      birthYear: z.number().optional().describe("Year of birth"),
+      deathPlace: z.string().optional().describe("Place of death"),
+      deathYear: z.number().optional().describe("Year of death"),
+    },
+    async ({ accessToken, ...searchParams }) => {
+      try {
+        console.log("Searching Family Tree with params:", searchParams);
+        const results = await searchPeople(accessToken, searchParams);
+        const formattedResults = formatSearchResults(results);
+        console.log("Formatted results:", formattedResults);
+        return {
+          content: [
+            {
+              type: "text",
+              text: formattedResults,
+            },
+          ],
+        };
+      } catch (err) {
+        const error = err as Error;
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error searching FamilySearch: ${error.message}`,
+            },
+          ],
+        };
+      }
     }
-  }
-);
+  );
 
-// Register the ancestry tool
-server.tool(
-  "get-ancestry",
-  "Get ancestry information for a person in FamilySearch's Family Tree",
-  {
-    accessToken: z.string().describe("FamilySearch API access token"),
-    personId: z.string().describe("FamilySearch person ID"),
-    generations: z.number().min(1).max(8).optional().describe("Number of generations to retrieve (1-8, default 4)"),
-  },
-  async ({ accessToken, personId, generations = 4 }) => {
-    try {
-      const results = await getPersonAncestry(accessToken, personId, generations);
-      const formattedResults = formatAncestryResults(results);
+  // Register the portraits tool
+  server.tool(
+    "get-portraits",
+    "Get portrait pictures for a person in FamilySearch's Family Tree",
+    {
+      accessToken: z.string().describe("FamilySearch API access token"),
+      personId: z.string().describe("FamilySearch person ID"),
+    },
+    async ({ accessToken, personId }) => {
+      try {
+        const results = await getPersonPortraits(accessToken, personId);
+        const formattedResults = formatPortraitResults(results);
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: formattedResults,
-          },
-        ],
-      };
-    } catch (err) {
-      const error = err as Error;
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Error fetching ancestry: ${error.message}`,
-          },
-        ],
-      };
+        return {
+          content: [
+            {
+              type: "text",
+              text: formattedResults,
+            },
+          ],
+        };
+      } catch (err) {
+        const error = err as Error;
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error fetching portraits: ${error.message}`,
+            },
+          ],
+        };
+      }
     }
-  }
-);
+  );
+
+  // Register the ancestry tool
+  server.tool(
+    "get-ancestry",
+    "Get ancestry information for a person in FamilySearch's Family Tree",
+    {
+      accessToken: z.string().describe("FamilySearch API access token"),
+      personId: z.string().describe("FamilySearch person ID"),
+      generations: z.number().min(1).max(8).optional().describe("Number of generations to retrieve (1-8, default 4)"),
+    },
+    async ({ accessToken, personId, generations = 4 }) => {
+      try {
+        const results = await getPersonAncestry(accessToken, personId, generations);
+        const formattedResults = formatAncestryResults(results);
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: formattedResults,
+            },
+          ],
+        };
+      } catch (err) {
+        const error = err as Error;
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Error fetching ancestry: ${error.message}`,
+            },
+          ],
+        };
+      }
+    }
+  );
+
+  return server;
+}
 
 // Run the server
 async function main() {
   const app = express();
   app.use(express.json());
+
+  const server = initializeServer();
   
   // Create MCP server route
   app.post('/mcp', async (req, res) => {
