@@ -353,11 +353,13 @@ async function main() {
         transport.close();
       });
 
-      console.log('Received MCP request (new):', req.headers, req.body);
+      console.log('Received MCP request (new):', req.headers, req.body, transport);
 
       // Connect transport to server and handle request
       await server.connect(transport);
+      console.log('check 1');
       await transport.handleRequest(req, res, req.body);
+      console.log('check 2');
     } catch (error) {
       console.error('Error handling MCP request:', error);
       if (!res.headersSent) {
