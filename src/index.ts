@@ -42,6 +42,7 @@ async function searchPeople(accessToken: string, query: {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
+        "FS-User-Agent-Chain": "ianor182"
       },
     });
 
@@ -66,6 +67,7 @@ async function getPersonPortraits(accessToken: string, personId: string) {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/json",
+        "FS-User-Agent-Chain": "ianor182"
       },
     });
 
@@ -88,6 +90,7 @@ async function getPersonAncestry(accessToken: string, personId: string, generati
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: "application/x-gedcomx-v1+json",
+        "FS-User-Agent-Chain": "ianor182"
       },
     });
 
